@@ -1,24 +1,21 @@
-﻿namespace Translate_app;
+﻿using Maui.DataGrid;
+using System.Collections.ObjectModel;
+using Syncfusion.Maui.DataGrid;
+
+namespace Translate_app;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
-
 	public MainPage()
 	{
-		InitializeComponent();
-	}
+        InitializeComponent();
+        TranslationRepository viewModel = new TranslationRepository();
+		dataGrid.ItemsSource = viewModel.translationCollection;
+    }
 
-	private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count+=10;
+    private void dataGrid_TranslatedTextEndEdit(object sender, DataGridCurrentCellEndEditEventArgs e)
+    {
+        Console.WriteLine(e.ToString());
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+    }
 }
-

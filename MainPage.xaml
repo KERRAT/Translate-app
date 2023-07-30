@@ -1,41 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Translate_app.MainPage">
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             xmlns:local="clr-namespace:Translate_app"
+             x:Class="Translate_app.MainPage"
+             Background="White">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Spacing="25"
-            Padding="30,0"
-            VerticalOptions="Center">
 
-            <Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
-                HorizontalOptions="Center" />
+    <ContentPage.BindingContext>
+        <local:TranslationRepository x:Name="viewModel" />
+    </ContentPage.BindingContext>
 
-            <Label
-                Text="Hello, .NET MAUI!"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
+    <ContentPage.Content>
+        <tabView:SfTabView x:Name="tabView">
+            <tabView:SfTabView.Items>
+                <tabView:SfTabItem Header="Call">
+                    <tabView:SfTabItem.Content>
 
-            <Label
-                Text="Welcome to .NET Multi-platform App UI"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
-                HorizontalOptions="Center" />
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me"
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Center" />
+                        <syncfusion:SfDataGrid x:Name="dataGrid"
+            ColumnWidthMode="Fill"
+            AutoGenerateColumnsMode="None"
+            SortingMode="Single"
+            SelectionMode="Single"
+            CurrentCellEndEdit="dataGrid_TranslatedTextEndEdit"
+            ItemsSource="{Binding translationCollection}">
 
-        </VerticalStackLayout>
-    </ScrollView>
+ 
+            <syncfusion:SfDataGrid.Columns>
+                
+                <syncfusion:DataGridTextColumn HeaderText="ID"
+                                   MappingName="ID"/>
+                <syncfusion:DataGridTextColumn HeaderText="UntranslatedText "
+                                   MappingName="UntranslatedText"/>
+                <syncfusion:DataGridTextColumn HeaderText="Translated"
+                                               MappingName="TranslatedText"
+                                               AllowEditing="True"/>
+                <syncfusion:DataGridTextColumn HeaderText="Status"
+                                               MappingName="TranslateStatus"/>
+                <syncfusion:DataGridTextColumn HeaderText="Date"
+                                               MappingName="ChangedDate"/>
+
+            </syncfusion:SfDataGrid.Columns>
+            
+        </syncfusion:SfDataGrid>
+                    </tabView:SfTabItem.Content>
+                </tabView:SfTabItem>
+            </tabView:SfTabView.Items>
+        </tabView:SfTabView>
+
+
+    </ContentPage.Content>
 
 </ContentPage>
