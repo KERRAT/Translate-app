@@ -6,51 +6,65 @@
              xmlns:local="clr-namespace:Translate_app"
              x:Class="Translate_app.MainPage"
              Background="White">
-
-
-    <ContentPage.BindingContext>
-        <local:TranslationRepository x:Name="viewModel" />
-    </ContentPage.BindingContext>
-
+    
     <ContentPage.Content>
-        <tabView:SfTabView x:Name="tabView">
-            <tabView:SfTabView.Items>
-                <tabView:SfTabItem Header="Call">
-                    <tabView:SfTabItem.Content>
+        <StackLayout>
+
+            <tabView:SfTabView x:Name="tabView">
+                <tabView:SfTabView.Items>
+                    <tabView:SfTabItem Header="Call">
+                        <tabView:SfTabItem.Content>
 
 
-                        <syncfusion:SfDataGrid x:Name="dataGrid"
-            ColumnWidthMode="Fill"
-            AutoGenerateColumnsMode="None"
-            SortingMode="Single"
-            SelectionMode="Single"
-            CurrentCellEndEdit="dataGrid_TranslatedTextEndEdit"
-            ItemsSource="{Binding translationCollection}">
-
- 
-            <syncfusion:SfDataGrid.Columns>
-                
-                <syncfusion:DataGridTextColumn HeaderText="ID"
-                                   MappingName="ID"/>
-                <syncfusion:DataGridTextColumn HeaderText="UntranslatedText "
-                                   MappingName="UntranslatedText"/>
-                <syncfusion:DataGridTextColumn HeaderText="Translated"
-                                               MappingName="TranslatedText"
-                                               AllowEditing="True"/>
-                <syncfusion:DataGridTextColumn HeaderText="Status"
-                                               MappingName="TranslateStatus"/>
-                <syncfusion:DataGridTextColumn HeaderText="Date"
-                                               MappingName="ChangedDate"/>
-
-            </syncfusion:SfDataGrid.Columns>
-            
-        </syncfusion:SfDataGrid>
-                    </tabView:SfTabItem.Content>
-                </tabView:SfTabItem>
-            </tabView:SfTabView.Items>
-        </tabView:SfTabView>
+                            <syncfusion:SfDataGrid x:Name="dataGrid"
+                                ColumnWidthMode="Fill"
+                                AutoGenerateColumnsMode="None"
+                                SortingMode="Single"
+                                SelectionMode="Single"
+                                CurrentCellEndEdit="dataGrid_TranslatedTextEndEdit"
+                                ItemsSource="{Binding translationCollection}">
 
 
+                                <syncfusion:SfDataGrid.Columns>
+
+                                    <syncfusion:DataGridTextColumn HeaderText="ID"
+                                                   MappingName="ID"/>
+                                    <syncfusion:DataGridTextColumn HeaderText="UntranslatedText "
+                                                   MappingName="UntranslatedText"/>
+                                    <syncfusion:DataGridTextColumn HeaderText="Translated"
+                                                               MappingName="TranslatedText"
+                                                               AllowEditing="True"/>
+                                    <syncfusion:DataGridTextColumn HeaderText="Status"
+                                                               MappingName="TranslateStatus"/>
+                                    <syncfusion:DataGridTextColumn HeaderText="Date"
+                                                               MappingName="ChangedDate"/>
+
+                                </syncfusion:SfDataGrid.Columns>
+
+                            </syncfusion:SfDataGrid>
+                        </tabView:SfTabItem.Content>
+                    </tabView:SfTabItem>
+                </tabView:SfTabView.Items>
+
+            </tabView:SfTabView>
+
+            <Button
+                x:Name="rst_select"
+                Text="Add new file"
+                SemanticProperties.Hint="rst or stringtable file"
+                Clicked="rst_select_Clicked"
+                HorizontalOptions="Center" />
+            <Button
+                x:Name="load_data"
+                Text="Load data"
+                SemanticProperties.Hint="rst or stringtable file"
+                Clicked="load_data_Clicked"
+                HorizontalOptions="Center" />
+
+        </StackLayout>
     </ContentPage.Content>
+
+
+
 
 </ContentPage>

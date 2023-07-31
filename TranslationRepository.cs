@@ -9,6 +9,8 @@ namespace Translate_app
 {
     public class TranslationRepository
     {
+        private static TranslationRepository _instance;
+
         private ObservableCollection<Translation> translation;
 
         public ObservableCollection<Translation> translationCollection
@@ -17,10 +19,22 @@ namespace Translate_app
             set { this.translation = value; }
         }
 
-        public TranslationRepository()
+        private TranslationRepository()
         {
             translation = new ObservableCollection<Translation>();
-            this.GenerateOrders();
+            GenerateOrders();
+        }
+
+        public static TranslationRepository Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new TranslationRepository();
+                }
+                return _instance;
+            }
         }
 
         public void GenerateOrders()
