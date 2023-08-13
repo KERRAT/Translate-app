@@ -35,17 +35,14 @@ namespace Translate_app
             }
         }
 
-        public static async Task<ObservableCollection<Translation>> GetData()
+        public static async Task<ObservableCollection<Translation>> GetData(int pageNumber)
         {
-            TranslationRepository repository = TranslationRepository.Instance;
-
-            repository.translationCollection.Clear();
+            ObservableCollection<Translation> translations = new ObservableCollection<Translation>();
 
             try
             {
                 using HttpClient httpClient = new HttpClient();
-                HttpResponseMessage response = await httpClient.GetAsync("https://func-translation-app.azurewebsites.net/api/GetTranslations?code=F8OG5t7HZIRLW6muI6I96ivO6AmjsDBxHSnD9PysUxBRAzFuBXsoUw==");
-
+                HttpResponseMessage response = await httpClient.GetAsync($"http://localhost:7261/api/GetTranslations?pageNumber={pageNumber}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -63,7 +60,7 @@ namespace Translate_app
 
                         try
                         {
-                            repository.translationCollection.Add(new Translation(
+                            translations.Add(new Translation(
                                 id,
                                 untranslatedText,
                                 translatedText,
@@ -88,7 +85,8 @@ namespace Translate_app
                 // Обробка виняткових ситуацій з мережею або запитом
                 // Можна додати відповідний код обробки помилок тут
             }
-            return repository.translationCollection;
+
+            return translations;
         }
 
         public class TranslationData

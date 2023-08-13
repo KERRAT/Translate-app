@@ -1,27 +1,37 @@
 ﻿using Syncfusion.Maui.DataGrid;
 using Noisrev.League.IO.RST;
 using Maui.DataGrid;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Translate_app;
 
 public partial class MainPage : ContentPage
 {
+    private int currentPage = 1;
+
     public MainPage()
     {
         InitializeComponent();
         BindingContext = TranslationRepository.Instance;
+        dataGrid.ItemsSource = TranslationRepository.Instance.translationCollection;
 
-        TranslationRepository viewModel = TranslationRepository.Instance;
-        dataGrid.ItemsSource = viewModel.translationCollection;
+        LoadData();
     }
 
-    private void dataGrid_TranslatedTextEndEdit(object sender, DataGridCurrentCellEndEditEventArgs e)
+    private async void LoadData()
     {
-        Console.WriteLine(e.ToString());
+        var Data = await DbCommunicator.GetData(1);
 
+
+        MainThread.BeginInvokeOnMainThread(() => {
+            TranslationRepository.Instance.AddRange(Data);
+        });
     }
 
-    private async void rst_select_Clicked(object sender, EventArgs e)
+
+
+    private async void RstSelectClicked(object sender, EventArgs e)
     {
         try
         {
@@ -56,9 +66,31 @@ public partial class MainPage : ContentPage
         return;
     }
 
-    private async void load_data_Clicked(object sender, EventArgs e)
+
+
+    private void dataGrid_CellValueChanged(object sender, DataGridCellValueChangedEventArgs e)
     {
-        dataGrid.ItemsSource = await DbCommunicator.GetData();
+        Console.WriteLine(e.ToString());
+    }
+
+    private async void LoadMoreData(object sender, EventArgs e)
+    {
+        currentPage++; // move to the next page
+        var newData = await DbCommunicator.GetData(currentPage);
+
+        if (newData != null && newData.Any())
+        {
+            try
+            {
+                MainThread.BeginInvokeOnMainThread(() => {
+                    TranslationRepository.Instance.AddRange(newData);
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading data: {ex.Message}");
+            }
+        }
     }
 
 }

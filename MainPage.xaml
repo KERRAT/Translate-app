@@ -1,31 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
              xmlns:local="clr-namespace:Translate_app"
              x:Class="Translate_app.MainPage"
              Background="White">
-    
-    <ContentPage.Content>
-        <StackLayout>
 
-            <tabView:SfTabView x:Name="tabView">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="FillAndExpand">
+
+            <tabView:SfTabView x:Name="tabView" VerticalOptions="FillAndExpand">
                 <tabView:SfTabView.Items>
                     <tabView:SfTabItem Header="Call">
                         <tabView:SfTabItem.Content>
 
-
                             <syncfusion:SfDataGrid x:Name="dataGrid"
-                                ColumnWidthMode="Fill"
-                                AutoGenerateColumnsMode="None"
-                                SortingMode="Single"
-                                SelectionMode="Single"
-                                CurrentCellEndEdit="dataGrid_TranslatedTextEndEdit"
-                                ItemsSource="{Binding translationCollection}">
-
-
+                                                  ColumnWidthMode="Fill"
+                                                  AutoGenerateColumnsMode="None"
+                                                  SortingMode="Single"
+                                                  SelectionMode="Single"
+                                                  CellValueChanged="dataGrid_CellValueChanged"
+                                                  ItemsSource="{Binding translationCollection}">
                                 <syncfusion:SfDataGrid.Columns>
+
 
                                     <syncfusion:DataGridTextColumn HeaderText="ID"
                                                    MappingName="ID"/>
@@ -40,31 +37,25 @@
                                                                MappingName="ChangedDate"/>
 
                                 </syncfusion:SfDataGrid.Columns>
-
                             </syncfusion:SfDataGrid>
+
                         </tabView:SfTabItem.Content>
                     </tabView:SfTabItem>
                 </tabView:SfTabView.Items>
-
             </tabView:SfTabView>
 
-            <Button
-                x:Name="rst_select"
-                Text="Add new file"
-                SemanticProperties.Hint="rst or stringtable file"
-                Clicked="rst_select_Clicked"
-                HorizontalOptions="Center" />
-            <Button
-                x:Name="load_data"
-                Text="Load data"
-                SemanticProperties.Hint="rst or stringtable file"
-                Clicked="load_data_Clicked"
-                HorizontalOptions="Center" />
+            <Button x:Name="loadMoreDataButton"
+                    Text="Load More Data"
+                    Clicked="LoadMoreData"
+                    HorizontalOptions="Center" />
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                <Button x:Name="rst_select"
+                        Text="Add new file"
+                        SemanticProperties.Hint="rst or stringtable file"
+                        Clicked="RstSelectClicked" />
+            </StackLayout>
 
         </StackLayout>
     </ContentPage.Content>
-
-
-
-
 </ContentPage>
