@@ -8,7 +8,10 @@ namespace Translate_app;
 
 public partial class MainPage : ContentPage
 {
-    private int currentPage = 1;
+    private int totalLoadedPages = 1;  // Змінена змінна
+    private int itemsPerPage = 100;  // Визначення розміру сторінки
+    private bool isLoading = false;
+
 
     public MainPage()
     {
@@ -16,16 +19,25 @@ public partial class MainPage : ContentPage
         BindingContext = TranslationRepository.Instance;
         dataGrid.ItemsSource = TranslationRepository.Instance.translationCollection;
 
+        dataGrid.QueryRowHeight += DataGrid_QueryRowHeight;
+
+        pageEntry.Text = totalLoadedPages.ToString();  // <-- Add this line
+
+
         LoadData();
+
+        dataGrid.Columns["TranslatedText"].AllowEditing = true;
+
     }
 
     private async void LoadData()
     {
-        var Data = await DbCommunicator.GetData(1);
+        var Data = await DbCommunicator.GetData(totalLoadedPages);
 
 
         MainThread.BeginInvokeOnMainThread(() => {
             TranslationRepository.Instance.AddRange(Data);
+            dataGrid.Columns["TranslatedText"].AllowEditing = true;
         });
     }
 
@@ -50,6 +62,8 @@ public partial class MainPage : ContentPage
 
             FileResult file = await FilePicker.Default.PickAsync(pickOptions);
 
+            if (file == null) return;
+
             var fileSource = file.FullPath.ToString();
 
             var rst = RSTFile.Load(fileSource);
@@ -66,31 +80,138 @@ public partial class MainPage : ContentPage
         return;
     }
 
-
-
-    private void dataGrid_CellValueChanged(object sender, DataGridCellValueChangedEventArgs e)
+    private void ToggleButtons(bool enable)
     {
-        Console.WriteLine(e.ToString());
+        rst_select.IsEnabled = enable;
+        previousPageButton.IsEnabled = enable;
+        goToPageButton.IsEnabled = enable;
+        nextPageButton.IsEnabled = enable;
+        refreshAllDataButton.IsEnabled = enable;
+
+        loadingIndicator.IsVisible = !enable;
+        loadingIndicator.IsRunning = !enable;
     }
 
-    private async void LoadMoreData(object sender, EventArgs e)
+    private void DataGrid_QueryRowHeight(object sender, DataGridQueryRowHeightEventArgs e)
     {
-        currentPage++; // move to the next page
-        var newData = await DbCommunicator.GetData(currentPage);
+        if (e.RowIndex > 0)
+        {
+            e.Height = e.GetIntrinsicRowHeight(e.RowIndex);
+            e.Handled = true;
+        }
+    }
+
+    private async void LoadPreviousPage(object sender, EventArgs e)
+    {
+        if (totalLoadedPages > 1) // Перевірка, чи не перша сторінка
+        {
+            totalLoadedPages--;
+            var data = await DbCommunicator.GetData(totalLoadedPages, itemsPerPage);
+            UpdateData(data);
+            pageEntry.Text = totalLoadedPages.ToString();  // <-- Add this line
+        }
+        else
+        {
+            // Повідомлення, що це перша сторінка
+        }
+    }
+
+    private async void LoadNextPage(object sender, EventArgs e)
+    {
+        if (isLoading)
+            return;
+
+        isLoading = true;
+        ToggleButtons(false);
+
+        totalLoadedPages++;
+        var data = await DbCommunicator.GetData(totalLoadedPages, itemsPerPage);
+        if (data != null && data.Any())
+        {
+            UpdateData(data);
+            pageEntry.Text = totalLoadedPages.ToString();  // <-- Add this line
+        }
+        else
+        {
+            // Повідомлення, що немає даних для наступної сторінки
+            totalLoadedPages--; // Зменшуємо кількість загальних завантажених сторінок
+        }
+    }
+
+    private async void GoToPage(object sender, EventArgs e)
+    {
+        if (int.TryParse(pageEntry.Text, out int pageNumber))
+        {
+            if (isLoading)
+                return;
+
+            isLoading = true;
+            ToggleButtons(false);
+
+            totalLoadedPages = pageNumber; // Set the current page to the entered page number
+            var data = await DbCommunicator.GetData(totalLoadedPages, itemsPerPage);
+            if (data != null && data.Any())
+            {
+                UpdateData(data);
+                pageEntry.Text = totalLoadedPages.ToString();  // <-- Add this line
+            }
+            else
+            {
+                // Повідомлення, що немає даних для введеного номера сторінки
+                totalLoadedPages--; // Зменшуємо кількість загальних завантажених сторінок
+            }
+        }
+        else
+        {
+            // Повідомлення, що введено неправильний номер сторінки
+        }
+    }
+
+    private void UpdateData(IEnumerable<Translation> data)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            TranslationRepository.Instance.translationCollection.Clear();
+            TranslationRepository.Instance.AddRange(data);
+            dataGrid.Columns["TranslatedText"].AllowEditing = true;
+            isLoading = false;
+            ToggleButtons(true);
+        });
+    }
+
+    private async void RefreshCurrentPageData(object sender, EventArgs e)
+    {
+
+        if (isLoading)
+            return;
+
+        isLoading = true;
+        ToggleButtons(false);
+
+        // Завантаження даних для поточної сторінки
+        var newData = await DbCommunicator.GetData(totalLoadedPages, itemsPerPage);
 
         if (newData != null && newData.Any())
         {
-            try
-            {
-                MainThread.BeginInvokeOnMainThread(() => {
-                    TranslationRepository.Instance.AddRange(newData);
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading data: {ex.Message}");
-            }
+              
+            MainThread.BeginInvokeOnMainThread(() =>
+            {  // Очистка існуючих даних
+                TranslationRepository.Instance.translationCollection.Clear();
+
+                // Додавання нових даних для поточної сторінки
+                TranslationRepository.Instance.AddRange(newData);
+                dataGrid.Columns["TranslatedText"].AllowEditing = true;
+                pageEntry.Text = totalLoadedPages.ToString();  // <-- Add this line
+                isLoading = false;
+                ToggleButtons(true);
+            });
+        }
+        else
+        {
+            // Повідомлення, що немає даних для поточної сторінки
         }
     }
+
+
 
 }

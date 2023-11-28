@@ -39,7 +39,12 @@ namespace Translate_app
         // Метод для додавання одного елемента
         public void Add(Translation item)
         {
-            translationCollection.Add(item);
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
+            if (!IsItemExists(item.ID))
+            {
+                translationCollection.Add(item);
+            }
         }
 
         // Метод для додавання кількох елементів
@@ -47,12 +52,16 @@ namespace Translate_app
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
 
-            var itemsList = items.ToList(); // Convert to List first
-
-            foreach (var item in itemsList)
+            foreach (var item in items)
             {
-                translationCollection.Add(item);
+                Add(item); // Use the Add method to add each item (this will ensure uniqueness)
             }
+        }
+
+        // Допоміжний метод для перевірки існування елемента в колекції за ID
+        private bool IsItemExists(long id)
+        {
+            return translationCollection.Any(t => t.ID == id);
         }
     }
 }

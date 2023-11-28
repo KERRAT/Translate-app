@@ -6,8 +6,47 @@
              x:Class="Translate_app.MainPage"
              Background="White">
 
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Button Style -->
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#2196F3" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="WidthRequest" Value="130" />
+                <Setter Property="Margin" Value="10" />
+            </Style>
+            <!-- Entry Style -->
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="PlaceholderColor" Value="#888" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="HeightRequest" Value="45" />
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="BackgroundColor" Value="White" />
+            </Style>
+
+            <!-- Button Style for navigation -->
+            <Style x:Key="NavigationButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#2196F3" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="HeightRequest" Value="35" />
+                <Setter Property="WidthRequest" Value="100" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="FontSize" Value="Small"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    
     <ContentPage.Content>
-        <StackLayout VerticalOptions="FillAndExpand">
+        <StackLayout VerticalOptions="FillAndExpand" Padding="20">
 
             <tabView:SfTabView x:Name="tabView" VerticalOptions="FillAndExpand">
                 <tabView:SfTabView.Items>
@@ -19,7 +58,6 @@
                                                   AutoGenerateColumnsMode="None"
                                                   SortingMode="Single"
                                                   SelectionMode="Single"
-                                                  CellValueChanged="dataGrid_CellValueChanged"
                                                   ItemsSource="{Binding translationCollection}">
                                 <syncfusion:SfDataGrid.Columns>
 
@@ -29,8 +67,8 @@
                                     <syncfusion:DataGridTextColumn HeaderText="UntranslatedText "
                                                    MappingName="UntranslatedText"/>
                                     <syncfusion:DataGridTextColumn HeaderText="Translated"
-                                                               MappingName="TranslatedText"
-                                                               AllowEditing="True"/>
+                                                                   AllowEditing="True"
+                                                                   MappingName="TranslatedText"/>
                                     <syncfusion:DataGridTextColumn HeaderText="Status"
                                                                MappingName="TranslateStatus"/>
                                     <syncfusion:DataGridTextColumn HeaderText="Date"
@@ -43,19 +81,21 @@
                     </tabView:SfTabItem>
                 </tabView:SfTabView.Items>
             </tabView:SfTabView>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="5">
+                <ActivityIndicator x:Name="loadingIndicator" IsRunning="False" IsVisible="False" />
 
-            <Button x:Name="loadMoreDataButton"
-                    Text="Load More Data"
-                    Clicked="LoadMoreData"
-                    HorizontalOptions="Center" />
+                <Button x:Name="rst_select" Text="Add file" SemanticProperties.Hint="rst or stringtable file" Clicked="RstSelectClicked" />
 
-            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
-                <Button x:Name="rst_select"
-                        Text="Add new file"
-                        SemanticProperties.Hint="rst or stringtable file"
-                        Clicked="RstSelectClicked" />
+                <Frame BackgroundColor="White" BorderColor="Gray" CornerRadius="5" Padding="5">
+                    <StackLayout Orientation="Horizontal" Spacing="5">
+                        <Button x:Name="previousPageButton" Text="←" Clicked="LoadPreviousPage" Style="{StaticResource NavigationButtonStyle}"/>
+                        <Entry x:Name="pageEntry" Placeholder="page" WidthRequest="60" Keyboard="Numeric" Style="{StaticResource NavigationButtonStyle}"/>
+                        <Button x:Name="goToPageButton" Text="Go" Clicked="GoToPage" Style="{StaticResource NavigationButtonStyle}"/>
+                        <Button x:Name="nextPageButton" Text="→" Clicked="LoadNextPage" Style="{StaticResource NavigationButtonStyle}"/>
+                    </StackLayout>
+                </Frame>
+                <Button x:Name="refreshAllDataButton" Text="Refresh" Clicked="RefreshCurrentPageData" VerticalOptions="CenterAndExpand"/>
             </StackLayout>
-
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

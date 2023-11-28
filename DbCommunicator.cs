@@ -14,7 +14,7 @@ namespace Translate_app
         {
             using HttpClient httpClient = new HttpClient();
             // Встановіть URL кінцевої точки API
-            string url = "https://func-translation-app.azurewebsites.net/api/AddUntraslatedFile?code=y5Qf_PoqeQWC7Oufb31iaTVyUaE1pSISGJTg-J4QjzvkAzFumidcqw==";
+            string url = "http://localhost:7261/api/AddUntraslatedFile?code=y5Qf_PoqeQWC7Oufb31iaTVyUaE1pSISGJTg-J4QjzvkAzFumidcqw==";
 
             url += $"&filename={fileName}";
 
@@ -35,14 +35,14 @@ namespace Translate_app
             }
         }
 
-        public static async Task<ObservableCollection<Translation>> GetData(int pageNumber)
+        public static async Task<ObservableCollection<Translation>> GetData(int pageNumber = 0, int pageSize = 20)
         {
             ObservableCollection<Translation> translations = new ObservableCollection<Translation>();
 
             try
             {
                 using HttpClient httpClient = new HttpClient();
-                HttpResponseMessage response = await httpClient.GetAsync($"http://localhost:7261/api/GetTranslations?pageNumber={pageNumber}");
+                HttpResponseMessage response = await httpClient.GetAsync($"http://localhost:7261/api/GetTranslations?pageNumber={pageNumber}&pageSize={pageSize}");
 
                 if (response.IsSuccessStatusCode)
                 {
